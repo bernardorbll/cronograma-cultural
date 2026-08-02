@@ -1,0 +1,26 @@
+name: Daily Cultural Report Bot
+
+on:
+  schedule:
+    # 09:30 UTC = 06:30 Brasília (UTC-3)
+    - cron: '30 9 * * *'
+  workflow_dispatch: # Permite rodar manualmente pelo painel do GitHub se quiser testar
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Run Daily Report Script
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: node scripts/daily_report.js

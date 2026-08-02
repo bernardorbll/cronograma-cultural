@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repertório Cultural: Cinema & Música</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <div class="brand-section">
+        <h1>Meu Repertório Cultural</h1>
+        <p>Acompanhamento pessoal de cinema, música e quadrinhos</p>
+      </div>
+      <nav>
+        <button id="nav-link-dashboard" class="nav-btn active" onclick="switchSection('dashboard')">Painel Principal</button>
+        <button id="nav-link-cinema" class="nav-btn" onclick="switchSection('cinema')">Cinema (Décadas)</button>
+        <button id="nav-link-discoteca" class="nav-btn" onclick="switchSection('discoteca')">Discoteca (Artistas)</button>
+        <button id="nav-link-diario" class="nav-btn" onclick="switchSection('diario')">Diário de Consumo</button>
+        <button id="nav-link-configuracoes" class="nav-btn" onclick="switchSection('configuracoes')">Ajustes & Estatísticas</button>
+      </nav>
+    </header>
+
+    <!-- SECTION: DASHBOARD -->
+    <section id="section-dashboard">
+      <div id="dashboard-container">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- SECTION: CINEMA -->
+    <section id="section-cinema" class="hidden-section">
+      <div class="section-title-row">
+        <h2>Cinema: 25 Clássicos por Década</h2>
+        <p style="color: var(--text-secondary); max-width: 500px; text-align: right;">
+          Escolha os filmes de cada década (a partir dos anos 1950) e agende-os para o fim de semana.
+        </p>
+      </div>
+      
+      <!-- Abas de Décadas -->
+      <div id="cinema-tabs-container" class="library-tabs">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+
+      <!-- Grid de Filmes -->
+      <div id="cinema-library-container">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- SECTION: DISCOTECA -->
+    <section id="section-discoteca" class="hidden-section">
+      <div class="section-title-row">
+        <h2>Discoteca: Artistas & Bandas Históricas</h2>
+        <p style="color: var(--text-secondary);">Explore as discografias imperdíveis dos maiores nomes da música nacional e internacional.</p>
+      </div>
+
+      <!-- Grid de Artistas -->
+      <div id="music-library-container">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- SECTION: DIÁRIO (EXCEL BONITINHO) -->
+    <section id="section-diario" class="hidden-section">
+      <div class="section-title-row">
+        <h2>Diário de Consumo</h2>
+        <p style="color: var(--text-secondary);">Todas as obras consumidas, avaliadas e comentadas.</p>
+      </div>
+
+      <!-- Tabela do Diário -->
+      <div id="diary-table-container">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- SECTION: CONFIGURAÇÕES E STATS -->
+    <section id="section-configuracoes" class="hidden-section">
+      <div class="section-title-row">
+        <h2>Estatísticas & Configurações</h2>
+      </div>
+
+      <!-- Estatísticas -->
+      <div id="stats-container">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+
+      <h3 style="margin: 2rem 0 1rem 0; font-family: 'Outfit';">Cronograma Semanal Ativo</h3>
+      <!-- Weekly Schedule Overview -->
+      <div id="weekly-schedule-container">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+
+      <!-- Painel de Sincronização na Nuvem -->
+      <div class="backup-panel glass" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <h3>Sincronização na Nuvem & Bot Discord</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.3rem;">
+            Integre seus dados com o seu GitHub Gist privado para compartilhar progresso entre PC/Celular e receber o resumo matinal no Discord.
+          </p>
+        </div>
+        
+        <div class="cloud-config-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="cloud-token" style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">GitHub Token (PAT)</label>
+            <input type="password" id="cloud-token" placeholder="ghp_..." style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-glass); color: var(--text-primary); border-radius: var(--radius-sm); padding: 0.6rem; outline: none;" />
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="cloud-gist-id" style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Gist ID</label>
+            <input type="text" id="cloud-gist-id" placeholder="id do gist privado..." style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-glass); color: var(--text-primary); border-radius: var(--radius-sm); padding: 0.6rem; outline: none;" />
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="cloud-webhook" style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Discord Webhook URL</label>
+            <input type="text" id="cloud-webhook" placeholder="https://discord.com/api/webhooks/..." style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-glass); color: var(--text-primary); border-radius: var(--radius-sm); padding: 0.6rem; outline: none;" />
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+          <input type="checkbox" id="cloud-auto-sync" style="cursor: pointer;" />
+          <label for="cloud-auto-sync" style="font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">Sincronização Automática ao Iniciar/Salvar</label>
+        </div>
+
+        <div class="backup-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-primary btn-sm" onclick="saveCloudConfig()">💾 Salvar Configurações</button>
+          <button class="btn btn-success btn-sm" onclick="uploadToCloud()">☁️ Enviar para Nuvem</button>
+          <button class="btn btn-secondary btn-sm" onclick="downloadFromCloud()">☁️ Baixar da Nuvem</button>
+          <button class="btn btn-secondary btn-sm" onclick="testDiscordWebhook()">🔔 Testar Discord</button>
+        </div>
+      </div>
+
+      <!-- Painel de Backups -->
+      <div class="backup-panel glass">
+        <div>
+          <h3>Backup e Persistência</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.3rem;">
+            Seus dados são salvos automaticamente no navegador. Use as opções abaixo para criar cópias de segurança ou restaurar seu progresso.
+          </p>
+        </div>
+        <div class="backup-actions">
+          <button class="btn btn-secondary" onclick="exportBackup()">📥 Exportar Backup (JSON)</button>
+          
+          <div class="file-input-wrapper btn btn-secondary">
+            <span>📤 Importar Backup (JSON)</span>
+            <input type="file" id="import-backup-file" accept=".json" />
+          </div>
+
+          <button class="btn btn-danger" onclick="if(confirm('Tem certeza de que deseja limpar todos os dados? Isso apagará seu histórico de notas e agendamentos.')) { localStorage.clear(); location.reload(); }">
+            ⚠️ Limpar Banco de Dados
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL DE AVALIAÇÃO -->
+  <div id="rating-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h3 id="modal-title-text" style="font-family: 'Outfit'; font-size: 1.4rem; margin-bottom: 0.2rem;">Avaliar Obra</h3>
+        <h4 id="modal-item-title" style="font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 0.2rem;">Título da Obra</h4>
+        <p id="modal-item-subtitle" class="modal-subtitle" style="margin-bottom: 1.2rem;">Subtítulo</p>
+        
+        <div class="form-group">
+          <label id="rating-select-label" for="rating-select">Sua Nota (1 a 10)</label>
+          <select id="rating-select">
+            <option value="10">🌟 10 - Obra-prima</option>
+            <option value="9">⭐ 9 - Excelente</option>
+            <option value="8">⭐ 8 - Muito bom</option>
+            <option value="7">⭐ 7 - Bom</option>
+            <option value="6">👍 6 - Regular</option>
+            <option value="5">😐 5 - Mediano</option>
+            <option value="4">👎 4 - Ruim</option>
+            <option value="3">👎 3 - Muito ruim</option>
+            <option value="2">💩 2 - Terrível</option>
+            <option value="1">💩 1 - Não gostei de nada</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label id="rating-notes-label" for="rating-notes">Anotações / Resenha Rápida</label>
+          <textarea id="rating-notes" rows="4" placeholder="Escreva aqui suas considerações sobre a obra..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-secondary btn-sm" onclick="closeRatingModal()">Cancelar</button>
+          <button id="modal-save-btn" class="btn btn-success btn-sm" onclick="saveRatingFromModal()">Salvar Avaliação</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
