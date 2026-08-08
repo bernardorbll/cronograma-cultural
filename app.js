@@ -582,8 +582,16 @@ function getMostRecentSaturday(date = new Date()) {
 function checkWeekRollover() {
   const currentSaturday = getMostRecentSaturday();
   if (!appState.weekStartDate) {
+    // Se a agenda atual tiver itens, vamos limpar para forçar a virada de semana da migração
+    const hasItems = CYCLE_DAYS.some(day => appState.currentWeek[day] && appState.currentWeek[day].length > 0);
     appState.weekStartDate = currentSaturday;
-    saveState();
+    if (hasItems) {
+      console.log("Migração detectada: limpando agenda antiga de filmes.");
+      resetWeek();
+      autoFillWeek();
+    } else {
+      saveState();
+    }
   } else if (appState.weekStartDate !== currentSaturday) {
     console.log("Novo ciclo semanal detectado. Reiniciando agenda de filmes para o novo fim de semana.");
     resetWeek();
