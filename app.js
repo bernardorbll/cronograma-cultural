@@ -554,13 +554,42 @@ function getCurrentDayKey() {
   return days[new Date().getDay()];
 }
 
-// Retorna os dias do ciclo visíveis até o dia de hoje
+// Retorna os dias do ciclo visíveis no dashboard (Apenas Sábado e Domingo)
 function getVisibleDays() {
   const todayKey = getCurrentDayKey();
-  const todayIdx = CYCLE_DAYS.indexOf(todayKey);
   
-  if (todayIdx === -1) return CYCLE_DAYS;
-  return CYCLE_DAYS.slice(0, todayIdx + 1);
+  if (todayKey === 'sab') {
+    return ['sab'];
+  }
+  // Se for domingo ou qualquer outro dia da semana, mostra Sábado e Domingo
+  return ['sab', 'dom'];
+}
+
+// Retorna a data do sábado mais recente no formato YYYY-MM-DD
+function getMostRecentSaturday(date = new Date()) {
+  const d = new Date(date);
+  const day = d.getDay(); // 0: dom, 1: seg, ..., 6: sab
+  const diff = (day === 6) ? 0 : (day + 1);
+  d.setDate(d.getDate() - diff);
+  
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+// Verifica se iniciamos um novo ciclo semanal (rolagem para novo sábado)
+function checkWeekRollover() {
+  const currentSaturday = getMostRecentSaturday();
+  if (!appState.weekStartDate) {
+    appState.weekStartDate = currentSaturday;
+    saveState();
+  } else if (appState.weekStartDate !== currentSaturday) {
+    console.log("Novo ciclo semanal detectado. Reiniciando agenda de filmes para o novo fim de semana.");
+    resetWeek();
+    appState.weekStartDate = currentSaturday;
+    autoFillWeek();
+  }
 }
 
 // Carrega o estado do localStorage
@@ -609,11 +638,17 @@ function loadState() {
       if (appState.musicQueue === undefined) {
         appState.musicQueue = ['The Beatles', 'Milton Nascimento & Lô Borges', 'Clairo', 'Jorge Ben Jor', 'Radiohead', 'Caetano Veloso', 'Arctic Monkeys', 'Pink Floyd', 'Novos Baianos', 'Frank Ocean', 'The Smiths', 'Chico Buarque', 'Daft Punk', 'Tim Maia', 'Kendrick Lamar', 'David Bowie', 'Gal Costa', 'The Strokes', 'Gilberto Gil', 'Tyler, The Creator', 'Elis Regina', 'Led Zeppelin', 'Belchior', 'Gorillaz', 'Racionais MC\'s', 'Stevie Wonder', 'Secos & Molhados', 'Miles Davis', 'Marcos Valle'];
       }
+
+      // Verifica se houve rolagem de semana
+      checkWeekRollover();
+
     } catch (e) {
       console.error('Erro ao ler estado do localStorage, iniciando limpo.', e);
     }
   } else {
     resetWeek();
+    appState.weekStartDate = getMostRecentSaturday();
+    autoFillWeek();
   }
 }
 
@@ -1053,6 +1088,8 @@ function importBackup(event) {
       const imported = JSON.parse(e.target.result);
       if (imported.currentWeek && imported.history && imported.ratings) {
         appState = imported;
+        // Verifica se a semana mudou após a importação
+        checkWeekRollover();
         saveState();
         renderAll();
         alert('Backup importado com sucesso!');
@@ -2046,6 +2083,9 @@ async function downloadFromCloud(silent = false) {
           // Desabilitar autoSync temporariamente para evitar loops infinitos de salvamento durante carregamento
           const originalSave = saveState;
           saveState = function() { localStorage.setItem('repertorio_cultural_state', JSON.stringify(appState)); };
+          
+          // Verifica se a semana mudou após carregar dados da nuvem
+          checkWeekRollover();
           
           saveState();
           renderAll();
