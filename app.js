@@ -693,7 +693,26 @@ function isConsumed(itemId) {
 }
 
 // Auto-preenche os 2 filmes do fim de semana
-function autoFillWeek() {
+function autoFillWeek(force = false) {
+  const hasMoviesInWeek = ['sab', 'dom'].some(day => 
+    appState.currentWeek[day] && appState.currentWeek[day].some(i => i.type === 'movie')
+  );
+
+  if (hasMoviesInWeek && !force) {
+    if (confirm("Você já tem filmes agendados para este fim de semana. Deseja limpar a agenda atual e sortear 2 novos filmes?")) {
+      // Limpa os filmes agendados de sab/dom
+      ['sab', 'dom'].forEach(day => {
+        if (appState.currentWeek[day]) {
+          appState.currentWeek[day] = appState.currentWeek[day].filter(i => i.type !== 'movie');
+        }
+      });
+      autoFillWeek(true);
+      return;
+    } else {
+      return;
+    }
+  }
+
   const availableMovies = MOVIES_DATABASE.filter(m => !isConsumed(m.id));
 
   function getRandomItems(pool, count) {
@@ -706,6 +725,7 @@ function autoFillWeek() {
   const sampledMoviesWeekend = getRandomItems(availableMovies.length > 2 ? availableMovies : MOVIES_DATABASE, 2);
 
   weekendDays.forEach((day, idx) => {
+    if (!appState.currentWeek[day]) appState.currentWeek[day] = [];
     const hasMovie = appState.currentWeek[day].some(i => i.type === 'movie');
     if (!hasMovie) {
       const movie = sampledMoviesWeekend[idx];
